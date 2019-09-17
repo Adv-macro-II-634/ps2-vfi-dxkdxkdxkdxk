@@ -69,35 +69,7 @@ dist = 1.0E+99 # initial distance measure and needs to be larger than ccrit.
 iters = 0      # nitial count for the number of iterations peformed
 
 # starting A = high
-while (dist > ccrit) and (iters < maxit):
-    VFnew = np.zeros((knpts, anpts))
-    iters = iters + 1
-    for i in range (0, knpts):
-        for j in range(0, anpts):
-            maxval = -1.0E+98
-            for m in range(0, knpts):
-                # get current period utility
-                yout, rat, con, inv, u =  \
-                    modeldefs(kgrid[i], kgrid[m], agrid[j], *mparams)
-                # get expected value
-                val = 0.
-                #for n in range (0,0):
-                #    val = val + u + beta*Pimat_h[n, j]*VF[m, n]
-                for n in range (0, anpts):
-                    # sum over all possible value of a(t+1) with Markov probs
-                    val = val + u + beta*Pimat[j, n]*VF[m, n]
-                    # if this exceeds previous maximum do replacements
-                if val > maxval:
-                    maxval = val
-                    VFnew[i, j] = val
-                    PF[i, j] = kgrid[m]
-                    
-    # dist = np.mean(np.abs(VF - VFnew))
-    dist = np.amax(np.abs(VF - VFnew))
-    print('iteration: ', iters, 'distance: ', dist)
-    VF = VFnew 
-    
-    
+
 while (dist > ccrit) and (iters < maxit):
     VFnew = np.zeros((knpts, anpts))
     iters = iters + 1

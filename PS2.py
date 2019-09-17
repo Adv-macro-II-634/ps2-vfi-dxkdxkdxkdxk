@@ -97,11 +97,13 @@ while (dist > ccrit) and (iters < maxit):
     print('iteration: ', iters, 'distance: ', dist)
     VF = VFnew 
     
-VFdata = pd.DataFrame(VF)
-plt.plot(kgrid,VFdata[1])
-plt.plot(kgrid,VFdata[0])
-    
 PFdata = pd.DataFrame(PF)
 plt.plot(kgrid,PFdata[1])
 plt.plot(kgrid,PFdata[0])
-    
+
+VFdata = pd.DataFrame(VF)    
+a = VFdata[1]
+b = VFdata[0]
+plt.plot(kgrid, a, 'r') # plotting t, a separately 
+plt.plot(kgrid, b, 'b') # plotting t, b separately 
+plt.show()

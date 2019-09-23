@@ -3,7 +3,7 @@ library(pracma)
 install.packages('zoo')
 library(zoo)
 library(ggplot2)
-############################ Q1 - Q3
+##################################### Q1 - Q3 #######################################
 alpha = .35
 beta = .99
 sigma = 2
@@ -82,5 +82,59 @@ ggplot() +
   xlab("k")+
   ylab("saving") + 
   geom_line(data = plot2[,c(3,5)], aes(x=k, y=lowsave), color='orange') 
-################ Q4
 
+#################################### Q4 ######################################
+pih = 74/97
+pil = 1-pih
+pmat = matrix(c(0.977,1-0.926,1-0.977,0.926),nrow=2,ncol=2)
+
+#### creating the sequence of k for 1000 periods, I used the steady state k as the k_0
+kseq = function(k_0,days){
+  kregh = lm(plot1$high ~ plot1$k)
+  summary(kregh)
+  d1 = kregh$coefficients[1]
+  d2 = kregh$coefficients[2]
+  k = NA
+  for (i in 1:days){
+    k[i] = d1 + k_0*d2
+    k_0 = k[i]
+  }
+  return(k)
+}
+ksq = kseq(kbar,1000)
+
+########## drawing random {A_t} for 1000 periods
+Ah = 1.006
+Al = (1-pih*Ah)/pil
+a = c(Ah, Al)
+Aseq = function(A_0,days){
+  A = NA
+  A = A_0
+  set.seed(12345)
+  for (i in 2:days){
+    if (A[i-1] == Ah){
+      A[i] = sample(a,1,replace = FALSE,pmat[1,])
+    }else{
+      A[i] = sample(a,1,replace = FALSE,pmat[2,])
+    } 
+  }
+  return(A)
+}
+Asq = Aseq(Ah,1000)
+
+##################### checking std of outputs and calibrating Ah
+for (i in 1:10){
+  Ah = 1+0.001*(i-1)
+  ysq = Aseq(Ah[i],1000)*ksq^alpha
+  stds[i] = std(log(ysq))
+}
+plot3 = stds
+
+ggplot() + 
+  geom_line(data = plot2[,3:4], aes(x=k, y=highsave), color='green') +
+  ggtitle("Savings") +
+  xlab("k")+
+  ylab("saving") + 
+  geom_line(data = plot2[,c(3,5)], aes(x=k, y=lowsave), color='orange') 
+
+            ###### Ah should be around 1.0065 in order to keep the std of output around 1.8%

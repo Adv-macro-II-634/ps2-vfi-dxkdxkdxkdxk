@@ -50,7 +50,7 @@ while (dis > tol){
   VF_guess = VF
 }
 Sys.time()
-
+                            ########## plot value function
 plot = data.frame(t(VF))
 plot$k = ktod$linspace.klow..khigh..ks.
 names(plot)[1:2] = c('high','low')
@@ -60,11 +60,11 @@ ggplot() +
   xlab("k")+
   ylab("value function") + 
   geom_line(data = plot[,c(2,3)], aes(x=k, y=low), color='blue') 
-  
+     
+                            ########## plot policy function
 plot1 = data.frame(t(PF))
 plot1$k = ktod$linspace.klow..khigh..ks.
 names(plot1)[1:2] = c('high','low')
-
 ggplot() + 
   geom_line(data = plot1[,c(1,3)], aes(x=k, y=high), color='black') +
   ggtitle("Policy Function") +
@@ -72,10 +72,10 @@ ggplot() +
   ylab("k'") + 
   geom_line(data = plot1[,c(2,3)], aes(x=k, y=low), color='brown') 
 
+                              ########## plot saving
 plot2 = plot1
 plot2$highsave = plot2$high - (1-delta)*plot2$k
 plot2$lowsave = plot2$low - (1-delta)*plot2$k
-
 ggplot() + 
   geom_line(data = plot2[,3:4], aes(x=k, y=highsave), color='green') +
   ggtitle("Savings") +
@@ -88,7 +88,7 @@ pih = 74/97
 pil = 1-pih
 pmat = matrix(c(0.977,1-0.926,1-0.977,0.926),nrow=2,ncol=2)
 
-#### creating the sequence of k for 1000 periods, I used the steady state k as the k_0
+########### creating the sequence of k for 1000 periods, I used the steady state k as the k_0
 kseq = function(k_0,days){
   kregh = lm(plot1$high ~ plot1$k)
   summary(kregh)
@@ -103,12 +103,12 @@ kseq = function(k_0,days){
 }
 ksq = kseq(kbar,1000)
 
-########## drawing random {A_t} for 1000 periods
-Ah = 1.006
+########## drawing random {A_t} for 1000 periods, checking std of outputs and calibrating Ah
+Ah = 1.0065
 Al = (1-pih*Ah)/pil
 a = c(Ah, Al)
+A = NA
 Aseq = function(A_0,days){
-  A = NA
   A = A_0
   set.seed(12345)
   for (i in 2:days){
@@ -121,20 +121,6 @@ Aseq = function(A_0,days){
   return(A)
 }
 Asq = Aseq(Ah,1000)
-
-##################### checking std of outputs and calibrating Ah
-for (i in 1:10){
-  Ah = 1+0.001*(i-1)
-  ysq = Aseq(Ah[i],1000)*ksq^alpha
-  stds[i] = std(log(ysq))
-}
-plot3 = stds
-
-ggplot() + 
-  geom_line(data = plot2[,3:4], aes(x=k, y=highsave), color='green') +
-  ggtitle("Savings") +
-  xlab("k")+
-  ylab("saving") + 
-  geom_line(data = plot2[,c(3,5)], aes(x=k, y=lowsave), color='orange') 
-
+ysq = Asq*ksq^alpha
+std(log(ysq))
             ###### Ah should be around 1.0065 in order to keep the std of output around 1.8%

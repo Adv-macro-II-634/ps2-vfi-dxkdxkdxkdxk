@@ -72,5 +72,15 @@ ggplot() +
   ylab("k'") + 
   geom_line(data = plot1[,c(2,3)], aes(x=k, y=low), color='brown') 
 
+plot2 = plot1
+plot2$highsave = plot2$high - (1-delta)*plot2$k
+plot2$lowsave = plot2$low - (1-delta)*plot2$k
+
+ggplot() + 
+  geom_line(data = plot2[,3:4], aes(x=k, y=highsave), color='green') +
+  ggtitle("Savings") +
+  xlab("k")+
+  ylab("saving") + 
+  geom_line(data = plot2[,c(3,5)], aes(x=k, y=lowsave), color='orange') 
 ################ Q4
 

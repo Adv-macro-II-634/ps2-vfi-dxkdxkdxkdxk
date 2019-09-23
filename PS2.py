@@ -47,7 +47,7 @@ kbar = (alpha*abar/(rbar))**(1/(1-alpha))
 
 klow = 0.01*kbar
 khigh = 1.99*kbar
-knpts = 21 
+knpts = 41 
 kgrid = np.linspace(klow, khigh,knpts)
 
 # set up grid for A

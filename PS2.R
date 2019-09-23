@@ -14,7 +14,7 @@ kbar = (alpha*abar/(rbar))**(1/(1-alpha))
 
 klow = 0.01*kbar
 khigh = 1.99*kbar
-ks = 51
+ks = 101
 ktod = data.frame(linspace(klow, khigh, ks))
 #ktom = data.frame(t(ktom))
 
@@ -61,16 +61,16 @@ ggplot() +
   ylab("value function") + 
   geom_line(data = plot[,c(2,3)], aes(x=k, y=low), color='blue') 
   
-plot = data.frame(t(PF))
-plot$k = ktod$linspace.klow..khigh..ks.
+plot1 = data.frame(t(PF))
+plot1$k = ktod$linspace.klow..khigh..ks.
+names(plot1)[1:2] = c('high','low')
 
-names(plot)[1:2] = c('high','low')
 ggplot() + 
-  geom_line(data = plot[,c(1,3)], aes(x=k, y=high), color='red') +
-  ggtitle("Value Function") +
+  geom_line(data = plot1[,c(1,3)], aes(x=k, y=high), color='black') +
+  ggtitle("Policy Function") +
   xlab("k")+
-  ylab("value function") + 
-  geom_line(data = plot[,c(2,3)], aes(x=k, y=low), color='blue') 
+  ylab("k'") + 
+  geom_line(data = plot1[,c(2,3)], aes(x=k, y=low), color='brown') 
 
 ################ Q4
 
